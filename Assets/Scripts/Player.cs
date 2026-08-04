@@ -15,17 +15,18 @@ public class Player : MonoBehaviour
     //カメラ感度
     public float rotationSpeed = 10f;
 
-    // 移動速度
-    public float walkSpeed = 5f;
-
+    //移動
     private float h;
     private float v;
-    private float currentSpeed;
     private Vector3 moveDirection;
+
+    // 移動速度
+    private float currentSpeed;
+    public float walkSpeed = 5f;
 
     //アクション
     public float jumpPower = 5f;
-
+    
     private bool isJump;
 
     void Start()
@@ -53,8 +54,7 @@ public class Player : MonoBehaviour
         }
     }
 
-    void FixedUpdate()
-    {
+    void FixedUpdate(){
         Vector3 forward = cameraTransform.forward;
         Vector3 right = cameraTransform.right;
 
@@ -64,6 +64,7 @@ public class Player : MonoBehaviour
         forward.Normalize();
         right.Normalize();
 
+        // カメラ基準の移動方向
         Vector3 move = forward * v + right * h;
         moveDirection = move;
 
@@ -77,6 +78,19 @@ public class Player : MonoBehaviour
             rb.linearVelocity.y,
             move.z * currentSpeed
         );
+
+        //プレイヤーを移動方向へ回転
+        if (move != Vector3.zero){
+            Quaternion targetRotation = Quaternion.LookRotation(move);
+
+            rb.MoveRotation(
+                Quaternion.Slerp(
+                    rb.rotation,
+                    targetRotation,
+                    rotationSpeed * Time.fixedDeltaTime
+                )
+            );
+        }
 
         //ジャンプ動作
         if (isJump && isGround){
@@ -94,6 +108,12 @@ public class Player : MonoBehaviour
         }
     }
 
+    void OnCollisionStay(Collision collision){
+        if (collision.gameObject.CompareTag("Ground")){
+            isGround = true;
+        }
+    }
+    
     void OnCollisionExit(Collision collision){
         if (collision.gameObject.CompareTag("Ground")){
             isGround = false;
