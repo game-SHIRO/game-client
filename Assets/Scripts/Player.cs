@@ -3,9 +3,6 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    //Unity内オブジェクト
-    private Rigidbody rb;
-
     //地面
     bool isGround;
 
@@ -23,10 +20,7 @@ public class Player : MonoBehaviour
     private float currentSpeed;
     private Vector3 moveDirection;
 
-    //アクション
-    public float jumpPower = 5f;
-
-    private bool isJump;
+    private Rigidbody rb;
 
     void Start()
     {
@@ -46,11 +40,6 @@ public class Player : MonoBehaviour
         //　WASD入力判定
         h = Input.GetAxisRaw("Horizontal");
         v = Input.GetAxisRaw("Vertical");
-
-        //ジャンプ判定
-        if (Input.GetKeyDown(KeyCode.Space) && isGround){
-            isJump = true;
-        }
     }
 
     void FixedUpdate()
@@ -77,26 +66,5 @@ public class Player : MonoBehaviour
             rb.linearVelocity.y,
             move.z * currentSpeed
         );
-
-        //ジャンプ動作
-        if (isJump && isGround){
-            rb.AddForce(Vector3.up * jumpPower, ForceMode.Impulse);
-            isGround = false;
-        }
-
-        isJump = false;
-    }
-
-    //地面に設置してるか判定
-    void OnCollisionEnter(Collision collision){
-        if (collision.gameObject.CompareTag("Ground")){
-            isGround = true;
-        }
-    }
-
-    void OnCollisionExit(Collision collision){
-        if (collision.gameObject.CompareTag("Ground")){
-            isGround = false;
-        }
     }
 }
