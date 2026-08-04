@@ -21,8 +21,11 @@ public class Player : MonoBehaviour
     private Vector3 moveDirection;
 
     // 移動速度
-    private float currentSpeed;
     public float walkSpeed = 5f;
+    public float dashSpeed = 10f;
+
+    private float currentSpeed;
+    private bool isDash;
 
     //アクション
     public float jumpPower = 5f;
@@ -47,6 +50,15 @@ public class Player : MonoBehaviour
         //　WASD入力判定
         h = Input.GetAxisRaw("Horizontal");
         v = Input.GetAxisRaw("Vertical");
+
+        //移動速度判定
+        isDash = Input.GetKey(KeyCode.LeftShift);
+
+        if(isDash){//ダッシュ時
+            currentSpeed = dashSpeed;
+        } else {//歩いてる時
+            currentSpeed = walkSpeed;
+        }
 
         //ジャンプ判定
         if (Input.GetKeyDown(KeyCode.Space) && isGround){
