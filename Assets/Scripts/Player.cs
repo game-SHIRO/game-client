@@ -21,10 +21,12 @@ public class Player : MonoBehaviour
     private Vector3 moveDirection;
 
     // 移動速度
+    public float crouchSpeed = 2.5f;
     public float walkSpeed = 5f;
     public float dashSpeed = 10f;
 
     private float currentSpeed;
+    private bool isCrouch;
     private bool isDash;
 
     //アクション
@@ -52,13 +54,17 @@ public class Player : MonoBehaviour
         v = Input.GetAxisRaw("Vertical");
 
         //移動速度判定
+        isCrouch = Input.GetKey(KeyCode.LeftControl);
         isDash = Input.GetKey(KeyCode.LeftShift);
 
         if(isDash){//ダッシュ時
             currentSpeed = dashSpeed;
+        } else if(isCrouch){//しゃがんでる時
+            currentSpeed = crouchSpeed;
         } else {//歩いてる時
             currentSpeed = walkSpeed;
         }
+        Debug.Log(currentSpeed);
 
         //ジャンプ判定
         if (Input.GetKeyDown(KeyCode.Space) && isGround){
