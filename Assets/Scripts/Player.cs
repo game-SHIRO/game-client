@@ -31,8 +31,13 @@ public class Player : MonoBehaviour
 
     //アクション
     public float jumpPower = 5f;
+    public float rollDuration = 0.5f;
+    public float rollSpeed = 15f;
     
     private bool isJump;
+    private bool isRoll = false;
+    private float rollTimer;
+    private Vector3 rollDirection;
 
     void Start()
     {
@@ -64,11 +69,14 @@ public class Player : MonoBehaviour
         } else {//歩いてる時
             currentSpeed = walkSpeed;
         }
-        Debug.Log(currentSpeed);
 
         //ジャンプ判定
         if (Input.GetKeyDown(KeyCode.Space) && isGround){
             isJump = true;
+        }
+
+        if(Input.GetKeyDown(KeyCode.C) && !isRoll){
+            StartRoll();
         }
     }
 
@@ -91,11 +99,25 @@ public class Player : MonoBehaviour
         }
 
         //移動
-        rb.linearVelocity = new Vector3(
-            move.x * currentSpeed,
-            rb.linearVelocity.y,
-            move.z * currentSpeed
-        );
+        if(isRoll){
+            rb.linearVelocity = new Vector3(
+                rollDirection.x * rollSpeed,
+                rb.linearVelocity.y,
+                rollDirection.z * rollSpeed
+            );
+
+            rollTimer -= Time.fixedDeltaTime;
+
+            if(rollTimer <= 0){
+                isRoll = false;
+            }
+        } else {
+            rb.linearVelocity = new Vector3(
+                move.x * currentSpeed,
+                rb.linearVelocity.y,
+                move.z * currentSpeed
+            );
+        }
 
         //プレイヤーを移動方向へ回転
         if (move != Vector3.zero){
@@ -117,6 +139,22 @@ public class Player : MonoBehaviour
         }
 
         isJump = false;
+    }
+
+    void StartRoll(){
+
+        if(isRoll){
+            return;
+        }
+        
+        isRoll = true;
+        rollTimer = rollDuration;
+
+        if(moveDirection != Vector3.zero){
+            rollDirection = moveDirection.normalized;
+        } else {
+            rollDirection = transform.forward;
+        }
     }
 
     //地面に設置してるか判定
